@@ -3,75 +3,65 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sirohi CSC - Professional Locked Form</title>
+    <title>Sirohi CSC - Absolute Final Master</title>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
     <style>
         @page { size: A4; margin: 0; }
-        * { box-sizing: border-box; -webkit-print-color-adjust: exact; color: #000 !important; }
-        
-        body { font-family: Arial, sans-serif; background: #1a1a1a; margin: 0; padding: 0; }
+        * { box-sizing: border-box; -webkit-print-color-adjust: exact; color: #000 !important; font-weight: normal !important; }
+        body { font-family: 'Arial', sans-serif; background: #121212; margin: 0; padding: 0; }
 
         .pdf-wrapper {
             background: #fff; width: 210mm; height: 297mm; 
-            margin: 20px auto; padding: 12mm; 
-            display: flex; align-items: center; justify-content: center;
-            overflow: hidden; page-break-after: avoid !important;
+            margin: 0 auto; padding: 10mm; 
+            display: flex; flex-direction: column; overflow: hidden;
+            position: relative;
         }
 
         .form-container { 
-            background: #fff; width: 100%; height: 100%; border: 2.8px solid #000; 
-            padding: 8mm 12mm; display: flex; flex-direction: column; overflow: hidden;
+            background: #fff; width: 100%; height: 100%; 
+            border: 2.2px solid #000; padding: 5mm 8mm; 
+            display: flex; flex-direction: column; justify-content: space-between;
         }
 
-        .header { text-align: center; border-bottom: 2.5px solid #000; margin-bottom: 15px; padding-bottom: 10px; line-height: 1.6; }
-        .header h2 { margin: 0; font-size: 1.4rem; text-decoration: underline; font-weight: bold; }
-        .header p { margin: 8px 0 0 0; font-weight: bold; font-size: 1.05rem; }
+        /* PDF मोड में बॉर्डर्स और चेकबॉक्स को छुपाना */
+        .pdf-mode .address-group, .pdf-mode .income-box, .pdf-mode .dob-box { border-color: transparent !important; }
+        .pdf-mode .rel-chk-container { display: none !important; } /* चेकबॉक्स प्रिंट में गायब */
 
-        .check-group { display: flex; justify-content: center; gap: 25px; padding: 6px; margin-bottom: 10px; border-bottom: 1px dashed #000; }
-        .check-group label { font-weight: bold; font-size: 0.95rem; display: flex; align-items: center; gap: 6px; cursor: pointer; }
+        .header { text-align: center; border-bottom: 2px solid #000; margin-bottom: 5px; padding-bottom: 5px; }
+        .header h2 { margin: 0; font-size: 1.25rem; text-decoration: underline; line-height: 1.8; }
+        .header p { margin: 2px 0 0 0; font-size: 0.9rem; }
 
-        .form-content { flex: 1; display: flex; flex-direction: column; }
-        .form-section { margin-bottom: 8px; display: flex; align-items: flex-start; width: 100%; }
+        .form-content { flex: 1; display: flex; flex-direction: column; gap: 4px; }
+        .form-section { display: flex; align-items: flex-start; width: 100%; }
         
-        .q-num { font-weight: bold; font-size: 1rem; min-width: 25px; display: inline-block; }
-        .label-text { font-weight: bold; font-size: 0.98rem; min-width: 185px; padding-top: 4px; }
+        .q-num { font-size: 0.9rem; min-width: 25px; padding-top: 5px; }
+        .label-text { font-size: 0.95rem; min-width: 175px; padding-top: 5px; display: flex; align-items: center; gap: 4px; }
         
         .input-box, .select-box, .address-area { 
-            flex-grow: 1; padding: 4px; border: none; border-bottom: 1.5px solid #000; 
-            font-size: 1.1rem; background: transparent; outline: none; font-weight: bold;
-        }
-        
-        /* लॉक होने पर हल्का ग्रे रंग */
-        .address-area:read-only { background-color: #f9f9f9; color: #555; cursor: not-allowed; }
-
-        .income-input { 
-            width: 100px; text-align: center; padding: 3px; border: 1.8px solid #000; 
-            font-size: 1.05rem; font-weight: bold; margin-left: 8px;
+            flex-grow: 1; padding: 5px 5px; border: none; border-bottom: 1.5px solid #000; 
+            font-size: 1.05rem; background: transparent; outline: none; line-height: 1.6;
         }
 
-        .address-group { border: 2.2px solid #000; padding: 12px; margin: 8px 0; position: relative; width: 100%; }
-        .address-header { position: absolute; top: -11px; left: 15px; background: #fff; padding: 0 8px; font-weight: bold; font-size: 0.85rem; }
-        .address-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .error-border { border-bottom: 2.5px solid red !important; background: #fff0f0 !important; }
 
-        .income-group-box { border: 2.2px solid #000; padding: 10px; margin: 8px 0; display: flex; justify-content: space-around; align-items: center; width: 100%; }
+        .dob-box { display: flex; align-items: center; gap: 6px; border-bottom: 1.5px solid #000; }
+        .dob-input { width: 38px; text-align: center; border: none; outline: none; font-size: 1.05rem; background: transparent; }
 
-        .footer-sign { 
-            margin-top: auto; 
-            padding: 20px 0 10px 0; 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: flex-end;
-            font-weight: bold; 
-            border-top: 1.5px dashed #000; 
-        }
+        .address-group { border: 2px solid #000; padding: 10px; margin: 3px 0; position: relative; width: 100%; }
+        .address-header { position: absolute; top: -11px; left: 15px; background: #fff; padding: 0 8px; font-size: 0.85rem; }
+        .address-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 
-        .submit-area { width: 100%; text-align: center; padding: 30px 0 60px 0; background: #1a1a1a; }
-        .btn-submit { background: #25D366; color: #fff !important; padding: 16px 70px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 1.3rem; box-shadow: 0 5px 15px rgba(0,0,0,0.4); }
+        .income-box { border: 1.8px solid #000; padding: 10px; display: flex; justify-content: space-around; margin: 4px 0; }
+        .income-input { width: 90px; text-align: center; border: 1.2px solid #000; padding: 4px; font-size: 1.05rem; }
+
+        .footer-sign { padding: 15px 0 0 0; display: flex; justify-content: space-between; align-items: flex-end; font-size: 1rem; border-top: 1.5px dashed #000; }
+
+        .submit-area { width: 100%; text-align: center; padding: 30px 0 60px 0; background: #121212; }
+        .btn-submit { background: #25D366; color: #fff; padding: 18px 80px; border: none; border-radius: 8px; cursor: pointer; font-size: 1.4rem; font-weight: bold; }
 
         .hidden { display: none !important; }
-        .fixed-val { background: #f2f2f2 !important; pointer-events: none; }
         @media print { .no-print { display: none !important; } }
     </style>
 </head>
@@ -81,125 +71,130 @@
     <div class="form-container">
         <div class="header">
             <h2>जाति, सामान्य निवास व आय प्रमाण पत्र हेतु आवेदन पत्र</h2>
-            <p>सिरोही सी.एस.सी. केन्द्र, सैदपुर, बुलन्दशहर, उत्तर प्रदेश | मो: 7300789906</p>
+            <p>सिरोही सी.एस.सी. केन्द्र, सैदपुर, बुलन्दशहर उत्तर प्रदेश | मो: 7300789906</p>
         </div>
 
-        <div class="check-group">
-            <label><input type="checkbox" id="chk-inc" onchange="updateForm()"> आय प्रमाण पत्र</label>
-            <label><input type="checkbox"> मूल निवास</label>
-            <label><input type="checkbox" id="chk-cas" onchange="updateForm()"> जाति प्रमाण पत्र</label>
+        <div class="no-print" id="svc-panel" style="text-align: center; border: 2px dashed #000; padding: 8px; margin-bottom: 5px; background: #fffbe6;">
+            <b>सेवा चुनें:*</b><br>
+            <label><input type="checkbox" class="svc-chk" id="chk-inc" onchange="updateForm()"> आय</label> |
+            <label><input type="checkbox" class="svc-chk" id="chk-res" onchange="updateForm()"> निवास</label> |
+            <label><input type="checkbox" class="svc-chk" id="chk-cas" onchange="updateForm()"> जाति</label>
         </div>
 
         <form id="cscForm" class="form-content">
-            <div class="form-section"><span class="q-num">1.</span> <span class="label-text">प्रारूप:</span>
-                <select class="select-box" required><option value="उत्तर प्रदेश">उत्तर प्रदेश</option><option value="भारत सरकार">भारत सरकार</option></select>
+            <div class="form-section"><span class="q-num">1.</span> <span class="label-text">प्रमाण पत्र प्रारूप:*</span>
+                <select id="p_format" class="select-box req-fld"><option value="चुनें">चुनें</option><option value="भारत सरकार">भारत सरकार</option><option value="उत्तर प्रदेश">उत्तर प्रदेश</option></select>
             </div>
-            
-            <div class="form-section"><span class="q-num">2.</span> <span class="label-text">क्षेत्र का प्रकार:</span>
-                <select class="select-box" required><option value="ग्रामीण">ग्रामीण</option><option value="नगरीय">नगरीय</option></select>
+            <div class="form-section"><span class="q-num">2.</span> <span class="label-text">सेवा का प्रकार:*</span>
+                <select id="p_area" class="select-box req-fld"><option value="चुनें">चुनें</option><option value="ग्रामीण">ग्रामीण</option><option value="नगरीय">नगरीय</option></select>
             </div>
-
-            <div class="form-section"><span class="q-num">3.</span> <span class="label-text">प्रार्थी का नाम:</span><input type="text" id="p-name" class="input-box" required></div>
+            <div class="form-section"><span class="q-num">3.</span> <span class="label-text">प्रार्थी का नाम:*</span><input type="text" id="p-name" class="input-box req-fld"></div>
             
             <div class="form-section">
-                <span class="q-num">4.</span>
-                <span class="label-text" id="parent-lbl">पिता का नाम:</span>
-                <select id="parent-type" class="no-print" style="margin-right: 5px; cursor:pointer;" onchange="document.getElementById('parent-lbl').innerText = this.value + ' का नाम:';">
-                    <option value="पिता">पिता</option><option value="पति">पति</option>
-                </select>
-                <input type="text" class="input-box" required>
+                <span class="q-num">4.</span> 
+                <span class="label-text">
+                    <span class="rel-chk-container">
+                        <label><input type="checkbox" id="chk-father" checked onclick="toggleRel('father')"> पिता</label>
+                        <label><input type="checkbox" id="chk-husband" onclick="toggleRel('husband')"> पति</label>
+                    </span>
+                    <span id="rel-lbl">पिता का नाम:</span>
+                </span>
+                <input type="text" id="p_rel_name" class="input-box req-fld">
             </div>
 
-            <div class="form-section"><span class="q-num">5.</span> <span class="label-text">माता का नाम:</span><input type="text" class="input-box" required></div>
+            <div class="form-section"><span class="q-num">5.</span> <span class="label-text">माता का नाम:*</span><input type="text" id="p_mother" class="input-box req-fld"></div>
             
-            <div style="display: flex; gap: 20px; width: 100%;">
-                <div class="form-section" style="flex:1;"><span class="q-num">6.</span> <span class="label-text" style="min-width: 90px;">जन्म तिथि:</span><input type="date" class="input-box" required></div>
-                <div class="form-section" style="flex:1;"><span class="q-num">7.</span> <span class="label-text" style="min-width: 90px;">मोबाइल:</span><input type="tel" id="p-tel" class="input-box" maxlength="10" pattern="[0-9]{10}" required></div>
+            <div class="form-section"><span class="q-num">6.</span> <span class="label-text">जन्म तिथि:*</span>
+                <div class="dob-box">
+                    <input type="text" id="day" class="dob-input req-fld" placeholder="DD" maxlength="2" oninput="moveNext(this, 'month')"> /
+                    <input type="text" id="month" class="dob-input req-fld" placeholder="MM" maxlength="2" oninput="moveNext(this, 'year')"> /
+                    <input type="text" id="year" class="dob-input req-fld" style="width:55px" placeholder="YYYY" maxlength="4" oninput="this.value=this.value.replace(/[^0-9]/g,'')">
+                </div>
+            </div>
+
+            <div class="form-section"><span class="q-num">7.</span> <span class="label-text">मोबाइल नंबर:*</span>
+                <input type="text" id="p-tel" class="input-box req-fld" maxlength="10" oninput="this.value=this.value.replace(/[^0-9]/g,'');">
             </div>
 
             <div class="address-group">
                 <span class="address-header">8. वर्तमान पता</span>
                 <div class="address-grid">
                     <div><small>मकान नं:</small><input type="text" id="c-mk" class="input-box"></div>
-                    <div><small>मोहल्ला:*</small><input type="text" id="c-mo" class="input-box" required></div>
-                    <div><small>ग्राम:*</small><input type="text" id="c-gr" class="input-box" required></div>
-                    <div><small>थाना:*</small><input type="text" id="c-th" class="input-box" required></div>
-                    <div><small>तहसील:*</small><input type="text" id="c-te" class="input-box" required></div>
-                    <div><small>जनपद:</small><input type="text" class="input-box fixed-val" value="बुलन्दशहर" readonly></div>
+                    <div><small>मोहल्ला/पोस्ट:*</small><input type="text" id="c-mo" class="input-box req-fld"></div>
+                    <div><small>ग्राम/नगर:*</small><input type="text" id="c-gr" class="input-box req-fld"></div>
+                    <div><small>थाना:*</small><input type="text" id="c-th" class="input-box req-fld"></div>
+                    <div><small>तहसील:*</small><input type="text" id="c-te" class="input-box req-fld"></div>
+                    <div><small>जनपद:</small><input type="text" value="बुलन्दशहर" readonly style="border:none; border-bottom:1.5px solid #000; padding:4px 0;"></div>
                 </div>
             </div>
 
             <div class="form-section" style="flex-direction: column; align-items: stretch;">
-                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 3px;">
-                    <span class="q-num">9.</span> <span style="font-weight: bold; font-size: 0.98rem;">स्थाई पता:*</span>
-                    <label style="font-size: 0.8rem; cursor: pointer; display: flex; align-items: center; gap: 4px;">
-                        <input type="checkbox" id="sync" onchange="syncAddr()"> उपरोक्तानुसार
-                    </label>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <span class="q-num">9.</span> <span style="font-size: 0.95rem;">स्थाई पता:*</span>
+                    <label style="font-size: 0.75rem;" class="no-print"><input type="checkbox" id="sync" onchange="syncAddr()"> उपरोक्तानुसार</label>
                 </div>
-                <textarea id="p-addr" class="address-area" rows="1" oninput="this.style.height = ''; this.style.height = this.scrollHeight + 'px'" required></textarea>
+                <textarea id="p-addr" class="address-area req-fld" rows="1" oninput="this.style.height = ''; this.style.height = this.scrollHeight + 'px'"></textarea>
             </div>
             
             <div id="cas-box" class="hidden">
-                <div class="form-section"><span class="q-num auto-n"></span> <span class="label-text">जाति (वर्ग):</span>
-                    <select class="select-box" id="cat" onchange="checkGen()">
-                        <option value="">--चुनें--</option>
-                        <option value="Gen">सामान्य जाति</option>
-                        <option value="OBC">पिछड़ी जाति</option>
-                        <option value="SC">अनुसूचित जाति</option>
-                        <option value="ST">अनुसूचित जनजाति</option>
-                    </select>
+                <div class="form-section"><span class="q-num auto-n"></span> <span class="label-text">जाति (वर्ग):*</span>
+                    <select class="select-box" id="cat" onchange="checkGen()"><option value="">--चुनें--</option><option value="Gen">सामान्य</option><option value="OBC">पिछड़ी जाति</option><option value="SC">अनुसूचित</option></select>
                 </div>
-                <div class="form-section" id="sub-box"><span class="q-num auto-n"></span> <span class="label-text">उपजाति:</span><input type="text" class="input-box"></div>
+                <div class="form-section" id="sub-box"><span class="q-num auto-n"></span> <span class="label-text">उपजाति:*</span><input type="text" class="input-box" id="sub-input"></div>
             </div>
 
             <div id="inc-box" class="hidden">
-                <div class="income-group-box">
-                    <div style="display:flex; align-items:center;">
-                        <span class="q-num auto-n"></span> <span style="font-weight:bold;">मासिक आय (₹):</span>
-                        <input type="number" class="income-input" placeholder="000000" oninput="if(this.value.length > 6) this.value = this.value.slice(0,6);">
-                    </div>
-                    <div style="display:flex; align-items:center;">
-                        <span style="font-weight:bold;">वार्षिक आय (₹):</span>
-                        <input type="number" class="income-input" placeholder="000000" oninput="if(this.value.length > 8) this.value = this.value.slice(0,6);">
-                    </div>
+                <div class="income-box">
+                    <div><span class="q-num auto-n"></span> मासिक आय:* <input type="text" id="inc_m" class="income-input" maxlength="8" oninput="this.value=this.value.replace(/[^0-9]/g,'');"></div>
+                    <div>वार्षिक आय:* <input type="text" id="inc_y" class="income-input" maxlength="8" oninput="this.value=this.value.replace(/[^0-9]/g,'');"></div>
                 </div>
             </div>
 
-            <div class="form-section"><span class="q-num auto-n"></span> <span class="label-text">व्यवसाय:</span><input type="text" class="input-box" required></div>
-            <div class="form-section"><span class="q-num auto-n"></span> <span class="label-text">आवेदन कारण:</span><input type="text" class="input-box" required></div>
+            <div class="form-section"><span class="q-num auto-n"></span> <span class="label-text">व्यवसाय:*</span><input type="text" id="p_work" class="input-box req-fld"></div>
+            <div class="form-section"><span class="q-num auto-n"></span> <span class="label-text">आवेदन कारण:*</span><input type="text" id="p_reason" class="input-box req-fld"></div>
         </form>
 
-        <div class="footer-sign">
-            <p>दिनांक: <span id="today"></span></p>
-            <p style="text-align: right;">हस्ताक्षर प्रार्थी: ........................</p>
-        </div>
+        <div class="footer-sign"><p>दिनांक: <span id="today"></span></p><p>हस्ताक्षर प्रार्थी: ........................</p></div>
     </div>
 </div>
 
-<div class="submit-area"><button class="btn-submit" onclick="done()">✓ फॉर्म डाउनलोड और सबमिट करें</button></div>
+<div class="submit-area"><button class="btn-submit" onclick="done()">SUBMIT / PDF SEND</button></div>
 
 <script>
-    window.onload = () => { 
-        document.getElementById('today').innerText = new Date().toLocaleDateString('hi-IN'); 
-        updateNumbers(); 
-    };
+    const ADMIN_IP = "YOUR_IP_HERE"; 
+
+    window.onload = () => { document.getElementById('today').innerText = new Date().toLocaleDateString('hi-IN'); updateNumbers(); };
+
+    function toggleRel(type) {
+        if(type === 'father') {
+            document.getElementById('chk-husband').checked = false;
+            document.getElementById('rel-lbl').innerText = "पिता का नाम:";
+        } else {
+            document.getElementById('chk-father').checked = false;
+            document.getElementById('rel-lbl').innerText = "पति का नाम:";
+        }
+    }
+
+    function moveNext(current, nextId) {
+        current.value = current.value.replace(/[^0-9]/g, '');
+        if (current.value.length >= 2) { document.getElementById(nextId).focus(); }
+    }
 
     function syncAddr() {
         const p = document.getElementById('p-addr');
-        const isChecked = document.getElementById('sync').checked;
-        
-        if(isChecked) {
+        if(document.getElementById('sync').checked) {
+            let mk = document.getElementById('c-mk').value;
             let mo = document.getElementById('c-mo').value;
             let gr = document.getElementById('c-gr').value;
             let th = document.getElementById('c-th').value;
             let te = document.getElementById('c-te').value;
-            p.value = mo + ', ' + gr + ', ' + th + ', ' + te + ', बुलन्दशहर';
+            p.value = (mk ? 'मकान नं. ' + mk + ', ' : '') + mo + ', ' + gr + ', ' + th + ', ' + te + ', बुलन्दशहर';
             p.style.height = 'auto'; p.style.height = p.scrollHeight + 'px';
-            p.readOnly = true; // एड्रेस लॉक कर दिया गया
-        } else {
-            p.value = "";
-            p.style.height = '25px';
-            p.readOnly = false; // अन-लॉक
+            p.readOnly = true; // स्थाई पता लॉक
+            p.classList.remove('error-border');
+        } else { 
+            p.value = ""; 
+            p.readOnly = false; // लॉक हटाना
         }
     }
 
@@ -211,46 +206,52 @@
 
     function updateNumbers() {
         let currentNum = 10;
-        const dynamicNumbers = document.querySelectorAll('.auto-n');
-        dynamicNumbers.forEach((el) => {
+        document.querySelectorAll('.auto-n').forEach((el) => {
             const parent = el.closest('div#cas-box, div#inc-box, div.form-section');
-            if (parent && !parent.classList.contains('hidden')) {
-                el.innerText = currentNum + ".";
-                currentNum++;
-            }
+            if (parent && !parent.classList.contains('hidden')) { el.innerText = currentNum + "."; currentNum++; }
         });
     }
 
     function checkGen() {
-        document.getElementById('sub-box').className = (document.getElementById('cat').value === "Gen") ? "hidden" : "form-section";
+        const isGen = document.getElementById('cat').value === "Gen";
+        document.getElementById('sub-box').className = isGen ? "hidden" : "form-section";
         updateNumbers();
     }
 
-    function done() {
-        const n = document.getElementById('p-name').value || "Form";
-        const f = document.getElementById('cscForm');
-        const phone = document.getElementById('p-tel').value;
+    async function done() {
+        let errors = 0;
+        const checked = document.querySelectorAll('.svc-chk:checked').length;
+        if(checked === 0) { alert("⚠️ सेवा चुनें!"); return; }
 
-        if(!f.checkValidity()) { alert("कृपया पूरी जानकारी भरें!"); f.reportValidity(); return; }
-        if(phone.length < 10) { alert("कृपया 10 अंकों का मोबाइल नंबर दर्ज करें!"); return; }
-
-        document.getElementById('parent-type').style.display = 'none';
-
-        html2pdf().from(document.getElementById('pdf-area')).set({
-            margin: 0, filename: n + '_Sirohi_CSC.pdf',
-            image: { type: 'jpeg', quality: 1 },
-            html2canvas: { scale: 3, useCORS: true, scrollY: 0, windowHeight: 1100 },
-            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-        }).save().then(() => {
-            document.getElementById('parent-type').style.display = 'inline-block';
+        document.querySelectorAll('.req-fld').forEach(fld => {
+            if(fld.value.trim() === "") { fld.classList.add('error-border'); errors++; }
+            else { fld.classList.remove('error-border'); }
         });
 
-        setTimeout(() => { 
-            window.location.href = `https://wa.me/917300789906?text=${encodeURIComponent("नमस्ते सिरोही CSC, प्रार्थी " + n + " का आवेदन सबमिट हो गया है।")}`; 
-        }, 3500);
+        if(errors > 0) { alert("❌ अधूरी जानकारी!"); return; }
+
+        const area = document.getElementById('pdf-area');
+        area.classList.add('pdf-mode');
+
+        const opt = {
+            margin: 0,
+            filename: (document.getElementById('p-name').value || 'Form') + '.pdf',
+            image: { type: 'jpeg', quality: 1 },
+            html2canvas: { scale: 2, useCORS: true, width: 793, height: 1122, scrollY: 0 },
+            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        };
+
+        html2pdf().from(area).set(opt).save().then(async () => {
+            area.classList.remove('pdf-mode');
+            try {
+                const res = await fetch('https://api.ipify.org?format=json');
+                const data = await res.json();
+                if (data.ip !== ADMIN_IP) {
+                    setTimeout(() => { window.location.href = `https://wa.me/917300789906?text=नमस्ते सिरोही CSC, प्रार्थी ${document.getElementById('p-name').value} का आवेदन सबमिट हो गया है।`; }, 1500);
+                }
+            } catch (e) { console.log("Done"); }
+        });
     }
 </script>
 </body>
 </html>
-
-
