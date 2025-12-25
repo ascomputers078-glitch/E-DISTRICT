@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sirohi CSC - Final Master Form</title>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+
+    <style>
+        @page { size: A4; margin: 0; }
+        * { box-sizing: border-box; -webkit-print-color-adjust: exact; }
+
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: #222; margin: 0; padding: 0; }
+        
+        .form-container { 
+            background: #fff; width: 210mm; height: 297mm; margin: 0 auto; 
+            padding: 10mm 15mm; border: 2.5px solid #000;
+            display: flex; flex-direction: column; overflow: hidden;
+        }
+
+        .header { text-align: center; border-bottom: 2px solid #000; margin-bottom: 10px; padding-bottom: 5px; }
+        .header h2 { margin: 0; font-size: 1.4rem; text-decoration: underline; color: #000; }
+        .header p { margin: 4px 0; font-weight: bold; font-size: 1rem; }
+
+        .check-group { display: flex; gap: 20px; background: #f2f2f2; padding: 8px; border: 1px dashed #000; margin-bottom: 10px; justify-content: center; }
+        .check-group label { font-weight: bold; font-size: 0.9rem; cursor: pointer; display: flex; align-items: center; gap: 8px; }
+
+        .form-content { flex: 1; display: flex; flex-direction: column; justify-content: flex-start; }
+        .form-section { margin-bottom: 7px; display: flex; align-items: center; width: 100%; }
+        .label-text { font-weight: bold; font-size: 0.95rem; min-width: 210px; color: #000; }
+        
+        .input-box, .select-box { 
+            flex-grow: 1; padding: 4px; border: none; border-bottom: 1px solid #000; 
+            font-size: 1.05rem; background: transparent; outline: none;
+        }
+        .select-box { cursor: pointer; font-weight: bold; color: #b33939; appearance: none; }
+
+        .address-group { border: 1.5px solid #000; padding: 10px; margin: 10px 0; position: relative; }
+        .address-header { position: absolute; top: -11px; left: 15px; background: #fff; padding: 0 8px; font-weight: bold; font-size: 0.85rem; }
+        .address-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        .address-grid div { display: flex; align-items: center; gap: 5px; }
+        .address-grid small { font-weight: bold; font-size: 0.85rem; }
+
+        .fixed-val { background: #f0f0f0 !important; color: #000; font-weight: bold; pointer-events: none; }
+        .hidden-field { display: none !important; }
+        .required-star { color: red; margin-left: 2px; }
+
+        .footer-sign { margin-top: auto; padding-bottom: 8mm; display: flex; justify-content: space-between; font-weight: bold; font-size: 1rem; }
+
+        .no-print { text-align: center; padding: 15px; position: sticky; top: 0; background: #000; z-index: 1000; }
+        .btn-submit { background: #25D366; color: white; padding: 12px 45px; border: none; border-radius: 50px; font-weight: bold; cursor: pointer; font-size: 1.2rem; }
+
+        @media screen and (max-width: 850px) {
+            .form-container { width: 100%; height: auto; padding: 5mm; border: none; }
+            .form-section { flex-direction: column; align-items: flex-start; }
+            .label-text { min-width: 100%; margin-bottom: 3px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="no-print">
+    <button class="btn-submit" id="main-btn" onclick="validateAndSubmit()">✓ सबमिट और WhatsApp पर भेजें</button>
+</div>
+
+<div class="form-container" id="pdf-area">
+    <div class="header">
+        <h2>जाति, सामान्य निवास व आय प्रमाण पत्र हेतु आवेदन पत्र</h2>
+        <p>सिरोही सी.एस.सी. केंद्र, सैदपुर (बुलन्दशहर) | मो: 7300789906</p>
+    </div>
+
+    <div class="check-group">
+        <label><input type="checkbox" name="service" value="आय" id="check-income" onchange="toggleFields()"> आय प्रमाण पत्र</label>
+        <label><input type="checkbox" name="service" value="मूल निवास"> मूल निवास</label>
+        <label><input type="checkbox" name="service" value="जाति" id="check-caste" onchange="toggleFields()"> जाति प्रमाण पत्र</label>
+    </div>
+
+    <form id="cscForm" class="form-content" onsubmit="return false;">
+        <div class="form-section">
+            <span class="label-text">1. प्रमाण पत्र का प्रारूप:<span class="required-star">*</span></span>
+            <select class="select-box" id="format-selector" onchange="toggleLanguage()" required>
+                <option value="">--- यहाँ से चुनें ---</option>
+                <option value="UP">उत्तर प्रदेश</option>
+                <option value="INDIA">भारत सरकार</option>
+            </select>
+        </div>
+
+        <div class="form-section">
+            <span class="label-text">2. सेवा का प्रकार:<span class="required-star">*</span></span>
+            <select class="select-box" required>
+                <option value="">--- यहाँ से चुनें ---</option>
+                <option value="ग्रामीण">ग्रामीण</option>
+                <option value="नगरीय">नगरीय</option>
+            </select>
+        </div>
+
+        <div class="form-section"><span class="label-text">3. प्रार्थी का नाम:<span class="required-star">*</span></span><input type="text" id="applicant-name" class="input-box hindi-input" required></div>
+        <div class="form-section"><span class="label-text">4. पिता/पति/संरक्षक का नाम:<span class="required-star">*</span></span><input type="text" class="input-box hindi-input" required></div>
+        <div class="form-section"><span class="label-text">5. माता का नाम:<span class="required-star">*</span></span><input type="text" class="input-box hindi-input" required></div>
+        
+        <div style="display: flex; gap: 20px;">
+            <div class="form-section" style="flex:1;"><span class="label-text" style="min-width: 100px;">6. जन्म तिथि:<span class="required-star">*</span></span><input type="date" class="input-box" required></div>
+            <div class="form-section" style="flex:1;"><span class="label-text" style="min-width: 100px;">7. मोबाईल नं.:<span class="required-star">*</span></span>
+                <input type="tel" id="cust-phone" class="input-box" maxlength="10" oninput="this.value = this.value.replace(/[^0-9]/g, '');" placeholder="सटीक 10 अंक" required>
+            </div>
+        </div>
+
+        <div class="address-group">
+            <span class="address-header">8. वर्तमान पता</span>
+            <div class="address-grid">
+                <div><small>(1) मकान नं (Optional):</small><input type="text" class="input-box"></div>
+                <div><small>(2) मौहल्ला/पोस्ट:<span class="required-star">*</span></small><input type="text" class="input-box hindi-input" required></div>
+                <div><small>(3) ग्राम का नाम:<span class="required-star">*</span></small><input type="text" class="input-box hindi-input" required></div>
+                <div><small>(4) थाना:<span class="required-star">*</span></small><input type="text" class="input-box hindi-input" required></div>
+                <div><small>(5) तहसील:<span class="required-star">*</span></small><input type="text" class="input-box hindi-input" required></div>
+                <div><small>(6) जनपद:</small><input type="text" class="input-box fixed-val" value="बुलन्दशहर" readonly tabindex="-1"></div>
+            </div>
+        </div>
+
+        <div class="form-section"><span class="label-text">9. स्थाई पता:<span class="required-star">*</span></span><input type="text" class="input-box hindi-input" value="" required></div>
+        
+        <div id="caste-fields" class="hidden-field">
+            <div class="form-section">
+                <span class="label-text">10. जाति (वर्ग):<span class="required-star">*</span></span>
+                <select class="select-box" id="category-select"><option value="">--- चुनें ---</option><option value="OBC">पिछड़ी</option><option value="SC">अनुसूचित जाति</option><option value="ST">अनुसूचित जनजाति</option></select>
+            </div>
+            <div class="form-section"><span class="label-text">11. उपजाति:<span class="required-star">*</span></span><input type="text" id="subcaste-input" class="input-box hindi-input"></div>
+        </div>
+
+        <div class="form-section"><span class="label-text">12. व्यवसाय:<span class="required-star">*</span></span><input type="text" class="input-box hindi-input" required></div>
+        
+        <div id="income-fields" class="hidden-field" style="display: flex; gap: 20px; border: 1px solid #ccc; padding: 10px; margin: 10px 0;">
+            <div class="form-section" style="flex:1; margin-bottom:0;"><span class="label-text" style="min-width: 100px;">13. मासिक आय:<span class="required-star">*</span></span><input type="number" class="input-box" id="m-income"></div>
+            <div class="form-section" style="flex:1; margin-bottom:0;"><span class="label-text" style="min-width: 100px;">वार्षिक आय:</span><input type="text" class="input-box fixed-val" id="a-income" readonly></div>
+        </div>
+
+        <div class="form-section"><span class="label-text">14. बनवाने का कारण:<span class="required-star">*</span></span><input type="text" class="input-box hindi-input" required></div>
+    </form>
+
+    <div class="footer-sign">
+        <p>दिनांक: <span id="current-date"></span></p>
+        <p>हस्ताक्षर प्रार्थी: ........................</p>
+    </div>
+</div>
+
+<script type="text/javascript">
+    var control;
+    google.load("elements", "1", { packages: "transliteration" });
+
+    window.onload = function() {
+        const d = new Date();
+        document.getElementById('current-date').innerText = ("0" + d.getDate()).slice(-2) + "/" + ("0" + (d.getMonth() + 1)).slice(-2) + "/" + d.getFullYear();
+    };
+
+    function onLoad() {
+        var options = { sourceLanguage: google.elements.transliteration.LanguageCode.ENGLISH,
+            destinationLanguage: [google.elements.transliteration.LanguageCode.HINDI],
+            shortcutKey: 'ctrl+g', transliterationEnabled: true };
+        control = new google.elements.transliteration.TransliterationControl(options);
+        control.makeTransliteratable(document.getElementsByClassName("hindi-input"));
+    }
+    google.setOnLoadCallback(onLoad);
+
+    function toggleFields() {
+        const casteChecked = document.getElementById('check-caste').checked;
+        document.getElementById('caste-fields').className = casteChecked ? "" : "hidden-field";
+        document.getElementById('category-select').required = casteChecked;
+        document.getElementById('subcaste-input').required = casteChecked;
+
+        const incomeChecked = document.getElementById('check-income').checked;
+        document.getElementById('income-fields').className = incomeChecked ? "form-section" : "hidden-field";
+        document.getElementById('m-income').required = incomeChecked;
+    }
+
+    function toggleLanguage() {
+        if (document.getElementById('format-selector').value === "INDIA") {
+            control.disableTransliteration();
+        } else {
+            control.enableTransliteration();
+        }
+    }
+
+    document.getElementById('m-income').addEventListener('input', function() {
+        let v = parseFloat(this.value);
+        document.getElementById('a-income').value = (!isNaN(v)) ? (v * 12).toFixed(0) : "";
+    });
+
+    function validateAndSubmit() {
+        const form = document.getElementById('cscForm');
+        const phone = document.getElementById('cust-phone').value;
+        const checkboxes = document.querySelectorAll('input[name="service"]:checked');
+
+        if (checkboxes.length === 0) { alert("त्रुटि: कम से कम एक सेवा (आय/मूल/जाति) चुनें।"); return; }
+        if (!form.checkValidity()) { alert("त्रुटि: कृपया सभी अनिवार्य (*) जानकारी भरें।"); form.reportValidity(); return; }
+        if (phone.length !== 10) { alert("त्रुटि: मोबाइल नंबर सटीक 10 अंकों का होना चाहिए।"); return; }
+
+        const name = document.getElementById('applicant-name').value || "Form";
+        const element = document.getElementById('pdf-area');
+        
+        html2pdf().from(element).set({
+            margin: 0,
+            filename: name + '_Sirohi_CSC_Form.pdf',
+            image: { type: 'jpeg', quality: 1 },
+            html2canvas: { scale: 2.5, useCORS: true, scrollY: 0 },
+            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        }).save();
+
+        const btn = document.getElementById('main-btn');
+        btn.innerText = "सेव हो गया! व्हाट्सएप खुल रहा है...";
+        
+        setTimeout(() => { 
+            const msg = `नमस्ते सिरोही CSC, प्रार्थी ${name} का आवेदन सबमिट हो गया है।`;
+            window.location.href = `https://wa.me/917300789906?text=${encodeURIComponent(msg)}`; 
+        }, 3500);
+    }
+</script>
+</body>
+</html>
